@@ -1,25 +1,22 @@
-import { useEffect, useState, useCallback } from 'react';
-import { isSSR } from '../utils';
-import useWindowSize from './useWindowSize';
+import { useEffect, useRef } from 'react';
+import useResponsiveObserver, { ScreenMap } from '../utils/responsiveObserver';
+import useForceUpdate from '../utils/useForceUpdate';
 
-const useBreakpoint = (): string | undefined => {
-  const { width } = useWindowSize();
-  const getBreakpoint = useCallback(
-    () =>
-      isSSR
-        ? undefined
-        : window
-          .getComputedStyle(document.body, '::after')
-          .content.replace(/"/g, ''),
-    []
-  );
-  const [breakpoint, setBreakpoint] = useState(getBreakpoint);
+export default function useBreakpoint(refreshOnChange: boolean = true): ScreenMap {
+  const screensRef = useRef<ScreenMap>({});
+  const forceUpdate = useForceUpdate();
+  const responsiveObserver = useResponsiveObserver();
 
   useEffect(() => {
-    setBreakpoint(getBreakpoint);
-  }, [width, getBreakpoint]);
+    const token = responsiveObserver.subscribe((supportScreens) => {
+      screensRef.current = supportScreens;
+      if (refreshOnChange) {
+        forceUpdate();
+      }
+    });
 
-  return breakpoint;
+    return () => responsiveObserver.unsubscribe(token);
+  }, []);
+
+  return screensRef.current;
 };
-
-export default useBreakpoint;
