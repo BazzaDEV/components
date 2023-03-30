@@ -8,6 +8,7 @@ import packageJson from './package.json' assert { type: 'json' };
 export default [
   {
     input: "src/index.ts",
+    external: [...Object.keys(packageJson.peerDependencies || {})],
     output: [
       {
         file: packageJson.main,
