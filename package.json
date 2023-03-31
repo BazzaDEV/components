@@ -1,6 +1,6 @@
 {
   "name": "@bazzadev/components",
-  "version": "2.1.6",
+  "version": "2.1.7",
   "type": "commonjs",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
